@@ -1,7 +1,5 @@
-import pytest
-from datetime import datetime, timedelta
-from amigo.schemas import AppointmentCreate
-from amigo.models import Appointment, User
+from datetime import datetime
+from amigo.models import Billing, User
 
 
 def create_test_user(db_session):
@@ -11,64 +9,45 @@ def create_test_user(db_session):
     return user
 
 
-def test_create_appointment(client, db_session):
-    user = create_test_user(db_session)
-    start_time = datetime.now().isoformat()
-    end_time = (datetime.now() + timedelta(hours=1)).isoformat()
+def create_test_billing(db_session, user_id):
+    billing = Billing(amount=100.0, date=datetime.now(), paid=False, user_id=user_id)
+    db_session.add(billing)
+    db_session.commit()
+    return billing
 
-    appointment_data = {
-        "start_time": start_time,
-        "end_time": end_time,
-        "description": "Test Appointment",
+
+def test_create_billing(client, db_session):
+    user = create_test_user(db_session)
+    billing_data = {
+        "amount": 200.0,
+        "date": datetime.now().isoformat(),
+        "paid": False,
         "user_id": user.id,
     }
-    response = client.post("/appointments/", json=appointment_data)
-    assert (
-        response.status_code == 201
-    ), f"Failed to create appointment: {response.json()}"
+    response = client.post("/billings/", json=billing_data)
+    assert response.status_code == 201, f"Failed to create billing: {response.json()}"
 
 
-def test_get_appointment(client, db_session):
+def test_get_billing(client, db_session):
     user = create_test_user(db_session)
-    appointment = Appointment(
-        start_time=datetime.now(),
-        end_time=datetime.now() + timedelta(hours=1),
-        description="Test Appointment",
-        user_id=user.id,
-    )
-    db_session.add(appointment)
-    db_session.commit()
+    billing = create_test_billing(db_session, user.id)
 
-    response = client.get(f"/appointments/{appointment.id}")
-    assert response.status_code == 200, f"Appointment not found: {response.json()}"
+    response = client.get(f"/billings/{billing.id}")
+    assert response.status_code == 200, f"Billing not found: {response.json()}"
 
 
-def test_update_appointment(client, db_session):
+def test_update_billing(client, db_session):
     user = create_test_user(db_session)
-    appointment = Appointment(
-        start_time=datetime.now(),
-        end_time=datetime.now() + timedelta(hours=1),
-        description="Initial Appointment",
-        user_id=user.id,
-    )
-    db_session.add(appointment)
-    db_session.commit()
+    billing = create_test_billing(db_session, user.id)
 
-    update_data = {"description": "Updated Appointment"}
-    response = client.put(f"/appointments/{appointment.id}", json=update_data)
+    update_data = {"amount": 300.0, "paid": True}
+    response = client.put(f"/billings/{billing.id}", json=update_data)
     assert response.status_code == 200, f"Update failed: {response.json()}"
 
 
-def test_delete_appointment(client, db_session):
+def test_delete_billing(client, db_session):
     user = create_test_user(db_session)
-    appointment = Appointment(
-        start_time=datetime.now(),
-        end_time=datetime.now() + timedelta(hours=1),
-        description="Delete Appointment",
-        user_id=user.id,
-    )
-    db_session.add(appointment)
-    db_session.commit()
+    billing = create_test_billing(db_session, user.id)
 
-    response = client.delete(f"/appointments/{appointment.id}")
+    response = client.delete(f"/billings/{billing.id}")
     assert response.status_code == 204, f"Deletion failed: {response.json()}"

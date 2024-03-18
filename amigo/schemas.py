@@ -70,6 +70,10 @@ class BillingBase(BaseModel):
 
 
 class BillingCreate(BillingBase):
+    user_id: int
+
+
+class BillingUpdate(BillingBase):
     pass
 
 
