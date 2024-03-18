@@ -1,2 +1,5 @@
 # Ignore Python Virtual Environment
 .venv
+__pycache__
+.vscode
+.ruff_cache
