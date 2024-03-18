@@ -46,8 +46,8 @@ class AppointmentBase(BaseModel):
     start_time: datetime
     end_time: datetime
     description: Optional[str] = None
-    service_type: Optional[str] = None
     notes: Optional[str] = None
+    user_id: int
 
 
 class AppointmentCreate(AppointmentBase):

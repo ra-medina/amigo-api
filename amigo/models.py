@@ -45,6 +45,7 @@ class Appointment(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     description = Column(String)
+    notes = Column(String)
     user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="appointments")
