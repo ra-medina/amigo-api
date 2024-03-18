@@ -1,53 +1,75 @@
-from datetime import datetime
-from amigo.models import Billing, User
+import pytest
+from datetime import datetime, timedelta
+from amigo.models import User, Appointment
 
 
-def create_test_user(db_session):
-    user = User(email="user@test.com", full_name="Test User", hashed_password="test")
+@pytest.fixture
+def test_user(db_session):
+    user = User(
+        email=f"user-{datetime.now().isoformat()}@test.com",
+        full_name="Test User",
+        hashed_password="test",
+    )
     db_session.add(user)
     db_session.commit()
     return user
 
 
-def create_test_billing(db_session, user_id):
-    billing = Billing(amount=100.0, date=datetime.now(), paid=False, user_id=user_id)
-    db_session.add(billing)
+@pytest.fixture
+def test_appointment(db_session, test_user):
+    start_time = datetime.now() + timedelta(days=1)
+    end_time = start_time + timedelta(hours=1)
+    appointment = Appointment(
+        start_time=start_time,
+        end_time=end_time,
+        description="Test Appointment",
+        user_id=test_user.id,
+    )
+    db_session.add(appointment)
     db_session.commit()
-    return billing
+    return appointment
 
 
-def test_create_billing(client, db_session):
-    user = create_test_user(db_session)
-    billing_data = {
-        "amount": 200.0,
-        "date": datetime.now().isoformat(),
-        "paid": False,
-        "user_id": user.id,
+def test_create_appointment(client, test_user):
+    appointment_data = {
+        "start_time": (datetime.now() + timedelta(days=1)).isoformat(),
+        "end_time": (datetime.now() + timedelta(days=1, hours=2)).isoformat(),
+        "description": "Test Create Appointment",
+        "user_id": test_user.id,
     }
-    response = client.post("/billings/", json=billing_data)
-    assert response.status_code == 201, f"Failed to create billing: {response.json()}"
+    response = client.post("/appointments/", json=appointment_data)
+    assert response.status_code == 201
+    assert response.json()["description"] == "Test Create Appointment"
 
 
-def test_get_billing(client, db_session):
-    user = create_test_user(db_session)
-    billing = create_test_billing(db_session, user.id)
-
-    response = client.get(f"/billings/{billing.id}")
-    assert response.status_code == 200, f"Billing not found: {response.json()}"
+def test_get_appointments(client, test_appointment):
+    response = client.get("/appointments/")
+    assert response.status_code == 200
+    assert len(response.json()) >= 1
 
 
-def test_update_billing(client, db_session):
-    user = create_test_user(db_session)
-    billing = create_test_billing(db_session, user.id)
-
-    update_data = {"amount": 300.0, "paid": True}
-    response = client.put(f"/billings/{billing.id}", json=update_data)
-    assert response.status_code == 200, f"Update failed: {response.json()}"
+def test_get_appointment(client, test_appointment):
+    response = client.get(f"/appointments/{test_appointment.id}")
+    assert response.status_code == 200
+    assert response.json()["id"] == test_appointment.id
 
 
-def test_delete_billing(client, db_session):
-    user = create_test_user(db_session)
-    billing = create_test_billing(db_session, user.id)
+def test_update_appointment(client, test_appointment):
+    updated_data = {
+        "description": "Updated Test Appointment",
+        "start_time": test_appointment.start_time.isoformat(),
+        "end_time": test_appointment.end_time.isoformat(),
+        "user_id": test_appointment.user_id,
+    }
+    response = client.put(f"/appointments/{test_appointment.id}", json=updated_data)
+    assert response.status_code == 200
+    assert response.json()["description"] == "Updated Test Appointment"
 
-    response = client.delete(f"/billings/{billing.id}")
-    assert response.status_code == 204, f"Deletion failed: {response.json()}"
+
+def test_delete_appointment(client, test_appointment):
+    response = client.delete(f"/appointments/{test_appointment.id}")
+    assert response.status_code == 204
+
+    # Verify deletion
+    response = client.get(f"/appointments/{test_appointment.id}")
+    assert response.status_code == 404

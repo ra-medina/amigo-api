@@ -16,6 +16,7 @@ def test_user_create_schema():
 
 def test_appointment_create_schema():
     appointment_data = {
+        "user_id": 1,
         "start_time": datetime.now(),
         "end_time": datetime.now(),
         "description": "Initial Consultation",
