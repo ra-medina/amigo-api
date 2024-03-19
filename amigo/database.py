@@ -7,13 +7,11 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 # Load environment variables
 load_dotenv()
 
-# Use global variables for the connection details
 PGUSER = getenv("PGUSER")
 PGPASSWORD = getenv("PGPASSWORD")
 PGHOST = getenv("PGHOST")
 PGDATABASE = getenv("PGDATABASE")
 
-# Create the connection string
 connection_string = URL.create(
     "postgresql",
     username=PGUSER,

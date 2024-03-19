@@ -11,7 +11,7 @@ def test_appointment(client):
         "start_time": start_time.isoformat(),
         "end_time": end_time.isoformat(),
         "description": "Test Appointment",
-        "user_id": 11,
+        "user_id": 1,
     }
     response = client.post("/appointments/", json=appointment_data)
     assert response.status_code == 201, f"Response body is: {response.json()}"
@@ -38,7 +38,7 @@ def test_update_appointment(client, test_appointment):
         "start_time": (datetime.now() + timedelta(days=1)).isoformat(),
         "end_time": (datetime.now() + timedelta(days=2)).isoformat(),
         "description": "Updated Test Appointment",
-        "user_id": 11,
+        "user_id": 1,
     }
 
     # Use the mock data to update the appointment

@@ -9,7 +9,7 @@ def billing_id(client):
         "amount": 100.0,
         "date": datetime.now().isoformat(),
         "paid": False,
-        "user_id": 11,
+        "user_id": 1,
     }
     response = client.post("/billings/", json=billing_payload)
     assert response.status_code == 201, f"Response body is: {response.json()}"
