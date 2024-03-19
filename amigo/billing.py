@@ -26,7 +26,7 @@ def create_billing(
     Returns:
     - The created billing record as a Billing model instance
     """
-    new_billing = models.Billing(**billing.dict())
+    new_billing = models.Billing(**billing.model_dump())
     db.add(new_billing)
     db.commit()
     db.refresh(new_billing)
@@ -92,7 +92,7 @@ def update_billing(
     if not existing_billing:
         raise HTTPException(status_code=404, detail="Billing record not found")
 
-    for key, value in billing.dict(exclude_unset=True).items():
+    for key, value in billing.model_dump(exclude_unset=True).items():
         setattr(existing_billing, key, value)
 
     db.commit()

@@ -2,7 +2,10 @@
 .venv
 __pycache__
 .vscode
+# running ci steps cache
 .ruff_cache
 .pytest_cache
 test.db
 .DS_Store
+# pytest coverage
+.coverage

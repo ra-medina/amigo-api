@@ -27,7 +27,7 @@ def create_appointment(
 
 
 @router.get("/appointments/", response_model=List[schemas.Appointment])
-def get_appointments(db: Session = Depends(get_db)) -> models.Appointment:
+def get_appointments(db: Session = Depends(get_db)) -> List[models.Appointment]:
     """
     Retrieve all appointments from the database.
     """
@@ -68,7 +68,7 @@ def update_appointment(
     )
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
-    appointment_data = updated_appointment.dict(exclude_unset=True)
+    appointment_data = updated_appointment.model_dump(exclude_unset=True)
     for key, value in appointment_data.items():
         setattr(appointment, key, value)
     db.commit()
@@ -89,4 +89,3 @@ def delete_appointment(appointment_id: int, db: Session = Depends(get_db)) -> No
         raise HTTPException(status_code=404, detail="Appointment not found")
     db.delete(appointment)
     db.commit()
-    return {"ok": True}

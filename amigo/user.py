@@ -2,21 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from . import models, schemas
-from .database import SessionLocal, engine
+from .database import engine, get_db
 from .security import get_password_hash
 
 models.Base.metadata.create_all(bind=engine)
 
 router = APIRouter()
-
-
-# Dependency to get the database session
-def get_db() -> Session:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post(
@@ -85,11 +76,14 @@ def update_user(
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Update model instance with the new data
-    if user.email:
+    if user.email is not None:
         db_user.email = user.email
-    if user.full_name:
+    if user.full_name is not None:
         db_user.full_name = user.full_name
+    if user.phone_number is not None:
+        db_user.phone_number = user.phone_number
+    if user.role is not None:
+        db_user.role = user.role
 
     db.commit()
     db.refresh(db_user)
@@ -115,4 +109,3 @@ def delete_user(user_id: int, db: Session = Depends(get_db)) -> None:
 
     db.delete(db_user)
     db.commit()
-    return {"ok": True}

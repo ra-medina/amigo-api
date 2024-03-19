@@ -1,12 +1,9 @@
-from passlib.context import CryptContext
-
-# CryptContext object is used to hash and verify passwords
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import bcrypt
 
 
 def get_password_hash(password: str) -> str:
     """
-    Hash a password using Bcrypt.
+    Hash a password using bcrypt.
 
     Args:
         password (str): The plain text password.
@@ -14,7 +11,11 @@ def get_password_hash(password: str) -> str:
     Returns:
         str: The hashed password.
     """
-    return pwd_context.hash(password)
+    # Convert the password to bytes, then hash it
+    password_bytes = password.encode("utf-8")
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password_bytes, salt)
+    return hashed_password.decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -28,4 +29,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         bool: True if the password is correct, False otherwise.
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    plain_password_bytes = plain_password.encode("utf-8")
+    hashed_password_bytes = hashed_password.encode("utf-8")
+    return bcrypt.checkpw(plain_password_bytes, hashed_password_bytes)

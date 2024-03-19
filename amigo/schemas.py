@@ -30,7 +30,7 @@ class UserInDBBase(UserBase):
     is_active: bool
     is_clinician: bool
 
-    class Config:
+    class ConfigDict:
         orm_mode = True
 
 
@@ -65,7 +65,7 @@ class Appointment(AppointmentBase):
     id: int
     user_id: int
 
-    class Config:
+    class ConfigDict:
         orm_mode = True
 
 
@@ -88,7 +88,7 @@ class Billing(BillingBase):
     id: int
     user_id: int
 
-    class Config:
+    class ConfigDict:
         orm_mode = True
 
 
@@ -108,7 +108,7 @@ class MedicalRecord(MedicalRecordBase):
     id: int
     user_id: int
 
-    class Config:
+    class ConfigDict:
         orm_mode = True
 
 
@@ -126,5 +126,5 @@ class Note(NoteBase):
     id: int
     author_id: int
 
-    class Config:
+    class ConfigDict:
         orm_mode = True
