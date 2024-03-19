@@ -6,7 +6,9 @@ POSTGRES_USER = "admin"
 POSTGRES_PASSWORD = "BOSTONpatriots123"
 DB_NAME = "postgres"
 
-SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost/{DB_NAME}"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost/{DB_NAME}"
+)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

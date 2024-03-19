@@ -29,7 +29,9 @@ def test_create_appointment(db_session):
     db_session.add(appointment)
     db_session.commit()
 
-    retrieved_appointment = db_session.query(Appointment).filter_by(user_id=user.id).first()
+    retrieved_appointment = (
+        db_session.query(Appointment).filter_by(user_id=user.id).first()
+    )
     assert retrieved_appointment is not None
     assert retrieved_appointment.start_time == start_time
     assert retrieved_appointment.end_time == end_time

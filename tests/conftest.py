@@ -9,7 +9,9 @@ from amigo.models import Base
 # Use a different database for tests, for example, a SQLite in-memory database
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

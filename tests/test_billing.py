@@ -44,4 +44,6 @@ def test_delete_billing(client, billing_id):
     assert response.status_code == 204, f"Deletion failed or error: {response.json()}"
 
     response = client.get(f"/billings/{billing_id}")
-    assert response.status_code == 404, "Billing should be deleted but is still accessible"
+    assert (
+        response.status_code == 404
+    ), "Billing should be deleted but is still accessible"
