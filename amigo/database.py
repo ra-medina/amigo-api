@@ -1,16 +1,29 @@
-from sqlalchemy import create_engine
+from os import getenv
+
+from dotenv import load_dotenv
+from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# TODO: replace this to global variables
-POSTGRES_USER = "admin"
-POSTGRES_PASSWORD = "BOSTONpatriots123"
-DB_NAME = "postgres"
+# Load environment variables
+load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost/{DB_NAME}"
+# Use global variables for the connection details
+PGUSER = getenv("PGUSER")
+PGPASSWORD = getenv("PGPASSWORD")
+PGHOST = getenv("PGHOST")
+PGDATABASE = getenv("PGDATABASE")
+
+# Create the connection string
+connection_string = URL.create(
+    "postgresql",
+    username=PGUSER,
+    password=PGPASSWORD,
+    host=PGHOST,
+    database=PGDATABASE,
+    query={"sslmode": "require"},
 )
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(connection_string)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
