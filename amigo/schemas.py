@@ -57,6 +57,10 @@ class AppointmentCreate(AppointmentBase):
     pass
 
 
+class AppointmentUpdate(AppointmentBase):
+    pass
+
+
 class Appointment(AppointmentBase):
     id: int
     user_id: int

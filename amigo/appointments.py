@@ -55,7 +55,7 @@ def get_appointment(
 @router.put("/appointments/{appointment_id}", response_model=schemas.Appointment)
 def update_appointment(
     appointment_id: int,
-    updated_appointment: schemas.AppointmentCreate,
+    updated_appointment: schemas.AppointmentUpdate,
     db: Session = Depends(get_db),
 ) -> models.Appointment:
     """

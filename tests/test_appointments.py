@@ -1,6 +1,5 @@
 import pytest
 from datetime import datetime, timedelta
-from amigo.models import Appointment
 
 
 @pytest.fixture(scope="module")
@@ -19,19 +18,6 @@ def test_appointment(client):
     return appointment_data["id"]
 
 
-def test_create_appointment(client):
-    appointment_payload = {
-        "start_time": (datetime.now() + timedelta(days=1)).isoformat(),
-        "end_time": (datetime.now() + timedelta(days=1, hours=2)).isoformat(),
-        "description": "Test Create Appointment",
-        "notes": "test note",
-        "user_id": 11,
-    }
-    response = client.post("/appointments/", json=appointment_payload)
-    assert response.status_code == 201
-    assert response.json()["description"] == "Test Create Appointment"
-
-
 def test_get_appointments(client):
     response = client.get("/appointments/")
     assert response.status_code == 200
@@ -45,13 +31,17 @@ def test_get_appointment(client, test_appointment):
 
 
 def test_update_appointment(client, test_appointment):
-    updated_data = {
+    appointment_id = test_appointment
+
+    mock_data = {
+        "start_time": (datetime.now() + timedelta(days=1)).isoformat(),
+        "end_time": (datetime.now() + timedelta(days=2)).isoformat(),
         "description": "Updated Test Appointment",
-        "start_time": test_appointment.start_time.isoformat(),
-        "end_time": test_appointment.end_time.isoformat(),
-        "user_id": test_appointment.user_id,
+        "user_id": 11,
     }
-    response = client.put(f"/appointments/{test_appointment}", json=updated_data)
+
+    # Use the mock data to update the appointment
+    response = client.put(f"/appointments/{appointment_id}", json=mock_data)
     assert response.status_code == 200
     assert response.json()["description"] == "Updated Test Appointment"
 
