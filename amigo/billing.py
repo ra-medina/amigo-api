@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.post(
     "/billings/",
+    tags=["billings"],
     response_model=schemas.Billing,
     status_code=status.HTTP_201_CREATED,
 )
@@ -34,7 +35,7 @@ def create_billing(
     return new_billing
 
 
-@router.get("/billings/", response_model=List[schemas.Billing])
+@router.get("/billings/", tags=["billings"], response_model=List[schemas.Billing])
 def get_billings(db: Session = Depends(get_db)) -> List[models.Billing]:
     """
     Retrieve all billing records from the database.
@@ -48,7 +49,7 @@ def get_billings(db: Session = Depends(get_db)) -> List[models.Billing]:
     return db.query(models.Billing).all()
 
 
-@router.get("/billings/{billing_id}", response_model=schemas.Billing)
+@router.get("/billings/{billing_id}", tags=["billings"], response_model=schemas.Billing)
 def get_billing(billing_id: int, db: Session = Depends(get_db)) -> models.Billing:
     """
     Retrieve a specific billing record by its ID.
@@ -69,7 +70,7 @@ def get_billing(billing_id: int, db: Session = Depends(get_db)) -> models.Billin
     return billing
 
 
-@router.put("/billings/{billing_id}", response_model=schemas.Billing)
+@router.put("/billings/{billing_id}", tags=["billings"], response_model=schemas.Billing)
 def update_billing(
     billing_id: int, billing: schemas.BillingUpdate, db: Session = Depends(get_db)
 ) -> models.Billing:
@@ -100,7 +101,9 @@ def update_billing(
     return existing_billing
 
 
-@router.delete("/billings/{billing_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/billings/{billing_id}", tags=["billings"], status_code=status.HTTP_204_NO_CONTENT
+)
 def delete_billing(billing_id: int, db: Session = Depends(get_db)) -> None:
     """
     Delete a billing record from the database.

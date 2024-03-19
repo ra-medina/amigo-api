@@ -11,7 +11,10 @@ router = APIRouter()
 
 
 @router.post(
-    "/users/", response_model=schemas.User, status_code=status.HTTP_201_CREATED
+    "/users/",
+    tags=["users"],
+    response_model=schemas.User,
+    status_code=status.HTTP_201_CREATED,
 )
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> models.User:
     """
@@ -39,7 +42,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> mode
     return new_user
 
 
-@router.get("/users/{user_id}", response_model=schemas.User)
+@router.get("/users/{user_id}", tags=["users"], response_model=schemas.User)
 def get_user(user_id: int, db: Session = Depends(get_db)) -> models.User:
     """
     Retrieve a user by ID.
@@ -57,7 +60,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)) -> models.User:
     return user
 
 
-@router.put("/users/{user_id}", response_model=schemas.User)
+@router.put("/users/{user_id}", tags=["users"], response_model=schemas.User)
 def update_user(
     user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)
 ) -> models.User:
@@ -90,7 +93,9 @@ def update_user(
     return db_user
 
 
-@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/users/{user_id}", tags=["users"], status_code=status.HTTP_204_NO_CONTENT
+)
 def delete_user(user_id: int, db: Session = Depends(get_db)) -> None:
     """
     Deletes a user.

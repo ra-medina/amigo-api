@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.post(
     "/appointments/",
+    tags=["appointments"],
     response_model=schemas.Appointment,
     status_code=status.HTTP_201_CREATED,
 )
@@ -27,7 +28,9 @@ def create_appointment(
     return new_appointment
 
 
-@router.get("/appointments/", response_model=List[schemas.Appointment])
+@router.get(
+    "/appointments/", tags=["appointments"], response_model=List[schemas.Appointment]
+)
 def get_appointments(db: Session = Depends(get_db)) -> List[models.Appointment]:
     """
     Retrieve all appointments from the database.
@@ -36,7 +39,11 @@ def get_appointments(db: Session = Depends(get_db)) -> List[models.Appointment]:
     return appointments
 
 
-@router.get("/appointments/{appointment_id}", response_model=schemas.Appointment)
+@router.get(
+    "/appointments/{appointment_id}",
+    tags=["appointments"],
+    response_model=schemas.Appointment,
+)
 def get_appointment(
     appointment_id: int, db: Session = Depends(get_db)
 ) -> models.Appointment:
@@ -53,7 +60,11 @@ def get_appointment(
     return appointment
 
 
-@router.put("/appointments/{appointment_id}", response_model=schemas.Appointment)
+@router.put(
+    "/appointments/{appointment_id}",
+    tags=["appointments"],
+    response_model=schemas.Appointment,
+)
 def update_appointment(
     appointment_id: int,
     updated_appointment: schemas.AppointmentUpdate,
@@ -76,7 +87,11 @@ def update_appointment(
     return appointment
 
 
-@router.delete("/appointments/{appointment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/appointments/{appointment_id}",
+    tags=["appointments"],
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 def delete_appointment(appointment_id: int, db: Session = Depends(get_db)) -> None:
     """
     Delete an appointment from the database.
