@@ -1,4 +1,5 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -13,9 +14,7 @@ router = APIRouter()
     response_model=schemas.Billing,
     status_code=status.HTTP_201_CREATED,
 )
-def create_billing(
-    billing: schemas.BillingCreate, db: Session = Depends(get_db)
-) -> models.Billing:
+def create_billing(billing: schemas.BillingCreate, db: Session = Depends(get_db)) -> models.Billing:
     """
     Create a new billing record.
 
@@ -69,9 +68,7 @@ def get_billing(billing_id: int, db: Session = Depends(get_db)) -> models.Billin
 
 
 @router.put("/billings/{billing_id}", response_model=schemas.Billing)
-def update_billing(
-    billing_id: int, billing: schemas.BillingUpdate, db: Session = Depends(get_db)
-) -> models.Billing:
+def update_billing(billing_id: int, billing: schemas.BillingUpdate, db: Session = Depends(get_db)) -> models.Billing:
     """
     Update an existing billing record.
 
@@ -86,9 +83,7 @@ def update_billing(
     Raises:
     - HTTPException: 404 error if the billing record is not found
     """
-    existing_billing = (
-        db.query(models.Billing).filter(models.Billing.id == billing_id).first()
-    )
+    existing_billing = db.query(models.Billing).filter(models.Billing.id == billing_id).first()
     if not existing_billing:
         raise HTTPException(status_code=404, detail="Billing record not found")
 

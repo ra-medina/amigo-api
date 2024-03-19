@@ -1,14 +1,12 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # TODO: replace this to global variables
 POSTGRES_USER = "admin"
 POSTGRES_PASSWORD = "BOSTONpatriots123"
 DB_NAME = "postgres"
 
-SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost/{DB_NAME}"
-)
+SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost/{DB_NAME}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

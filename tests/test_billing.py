@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import pytest
 
 
@@ -23,9 +24,7 @@ def test_create_billing(billing_id):
 
 def test_get_billing(client, billing_id):
     response = client.get(f"/billings/{billing_id}")
-    assert response.status_code == 200, "Billing not found or error: {}".format(
-        response.json()
-    )
+    assert response.status_code == 200, f"Billing not found or error: {response.json()}"
 
 
 def test_update_billing(client, billing_id):
@@ -35,20 +34,14 @@ def test_update_billing(client, billing_id):
         "paid": True,
     }
     response = client.put(f"/billings/{billing_id}", json=updated_data)
-    assert response.status_code == 200, "Update failed or error: {}".format(
-        response.json()
-    )
+    assert response.status_code == 200, f"Update failed or error: {response.json()}"
     assert response.json()["amount"] == 150.0
     assert response.json()["paid"] is True
 
 
 def test_delete_billing(client, billing_id):
     response = client.delete(f"/billings/{billing_id}")
-    assert response.status_code == 204, "Deletion failed or error: {}".format(
-        response.json()
-    )
+    assert response.status_code == 204, f"Deletion failed or error: {response.json()}"
 
     response = client.get(f"/billings/{billing_id}")
-    assert (
-        response.status_code == 404
-    ), "Billing should be deleted but is still accessible"
+    assert response.status_code == 404, "Billing should be deleted but is still accessible"

@@ -1,5 +1,6 @@
-from amigo.schemas import UserCreate, AppointmentCreate, MedicalRecordCreate, NoteCreate
 from datetime import datetime
+
+from amigo.schemas import AppointmentCreate, MedicalRecordCreate, NoteCreate, UserCreate
 
 
 def test_user_create_schema():

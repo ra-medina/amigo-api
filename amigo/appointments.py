@@ -1,6 +1,7 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 
 from . import models, schemas
 from .database import get_db
@@ -13,9 +14,7 @@ router = APIRouter()
     response_model=schemas.Appointment,
     status_code=status.HTTP_201_CREATED,
 )
-def create_appointment(
-    appointment: schemas.AppointmentCreate, db: Session = Depends(get_db)
-) -> models.Appointment:
+def create_appointment(appointment: schemas.AppointmentCreate, db: Session = Depends(get_db)) -> models.Appointment:
     """
     Create a new appointment in the database.
     """
@@ -36,17 +35,11 @@ def get_appointments(db: Session = Depends(get_db)) -> List[models.Appointment]:
 
 
 @router.get("/appointments/{appointment_id}", response_model=schemas.Appointment)
-def get_appointment(
-    appointment_id: int, db: Session = Depends(get_db)
-) -> models.Appointment:
+def get_appointment(appointment_id: int, db: Session = Depends(get_db)) -> models.Appointment:
     """
     Retrieve a specific appointment by its ID.
     """
-    appointment = (
-        db.query(models.Appointment)
-        .filter(models.Appointment.id == appointment_id)
-        .first()
-    )
+    appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
     if appointment is None:
         raise HTTPException(status_code=404, detail="Appointment not found")
     return appointment
@@ -61,11 +54,7 @@ def update_appointment(
     """
     Update an existing appointment.
     """
-    appointment = (
-        db.query(models.Appointment)
-        .filter(models.Appointment.id == appointment_id)
-        .first()
-    )
+    appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
     appointment_data = updated_appointment.model_dump(exclude_unset=True)
@@ -80,11 +69,7 @@ def delete_appointment(appointment_id: int, db: Session = Depends(get_db)) -> No
     """
     Delete an appointment from the database.
     """
-    appointment = (
-        db.query(models.Appointment)
-        .filter(models.Appointment.id == appointment_id)
-        .first()
-    )
+    appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
     db.delete(appointment)

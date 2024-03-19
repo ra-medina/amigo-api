@@ -10,9 +10,7 @@ models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
 
 
-@router.post(
-    "/users/", response_model=schemas.User, status_code=status.HTTP_201_CREATED
-)
+@router.post("/users/", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> models.User:
     """
     Create a new user in the database.
@@ -29,9 +27,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> mode
         raise HTTPException(status_code=400, detail="Email already registered")
 
     hashed_password = get_password_hash(user.password)
-    new_user = models.User(
-        email=user.email, full_name=user.full_name, hashed_password=hashed_password
-    )
+    new_user = models.User(email=user.email, full_name=user.full_name, hashed_password=hashed_password)
 
     db.add(new_user)
     db.commit()
@@ -58,9 +54,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)) -> models.User:
 
 
 @router.put("/users/{user_id}", response_model=schemas.User)
-def update_user(
-    user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)
-) -> models.User:
+def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)) -> models.User:
     """
     Update user information.
 
