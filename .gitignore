@@ -9,3 +9,4 @@ test.db
 .DS_Store
 # pytest coverage
 .coverage
+.env
