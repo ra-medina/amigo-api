@@ -2,11 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+# TODO: replace this to global variables
 POSTGRES_USER = "admin"
 POSTGRES_PASSWORD = "BOSTONpatriots123"
 DB_NAME = "postgres"
 
-# Replace 'postgres_user', 'postgres_password', 'localhost' and 'amigo_db' with your PostgreSQL credentials and database name
 SQLALCHEMY_DATABASE_URL = (
     f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost/{DB_NAME}"
 )

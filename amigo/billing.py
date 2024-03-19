@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post(
     "/billings/",
-    response_model=schemas.BillingCreate,
+    response_model=schemas.Billing,
     status_code=status.HTTP_201_CREATED,
 )
 def create_billing(

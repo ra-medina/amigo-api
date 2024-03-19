@@ -94,3 +94,25 @@ def update_user(
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: int, db: Session = Depends(get_db)) -> None:
+    """
+    Deletes a user.
+
+    Parameters:
+    - user_id: integer representing the User ID
+    - user: UserUpdate schema with user's email and/or full name
+    - db: Session dependency to interact with the database
+
+    Returns:
+    - 204 Code meaning User was deleted.
+    """
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db.delete(db_user)
+    db.commit()
+    return {"ok": True}

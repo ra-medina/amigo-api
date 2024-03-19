@@ -18,7 +18,10 @@ class UserCreate(UserBase):
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):
-    pass
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    role: Optional[str] = None
 
 
 # Properties shared by models stored in DB
