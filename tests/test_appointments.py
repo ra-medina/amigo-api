@@ -19,6 +19,38 @@ def test_appointment(client):
     return appointment_data["id"]
 
 
+def test_create_appointment(client):
+    start_time = datetime.now() + timedelta(days=1)
+    end_time = start_time + timedelta(hours=1)
+    appointment_data = {
+        "start_time": start_time.isoformat(),
+        "end_time": end_time.isoformat(),
+        "description": "Test Appointment",
+        "user_id": 1,
+    }
+    response = client.post("/appointments/", json=appointment_data)
+    assert response.status_code == 201, f"Response body is: {response.json()}"
+    appointment_data = response.json()
+    assert appointment_data["description"] == "Test Appointment"
+    # remove the appointment
+    appointment_id = appointment_data["id"]
+    response = client.delete(f"/appointments/{appointment_id}")
+
+
+# test create appointment but with invalid data
+def test_create_appointment_invalid_data(client):
+    start_time = datetime.now() + timedelta(days=1)
+    end_time = start_time + timedelta(hours=1)
+    appointment_data = {
+        "start_time": start_time.isoformat(),
+        "end_time": end_time.isoformat(),
+        "description": 123,
+        "user_id": 1,
+    }
+    response = client.post("/appointments/", json=appointment_data)
+    assert response.status_code == 422, f"Response body is: {response.json()}"
+
+
 def test_get_appointments(client):
     response = client.get("/appointments/")
     assert response.status_code == 200

@@ -20,6 +20,11 @@ def user_id(client):
     return user_data["id"]
 
 
+# test create user and delete it
+def test_create_user(user_id):
+    assert user_id is not None, "User creation failed"
+
+
 def test_get_user(client, user_id):
     response = client.get(f"/users/{user_id}")
     assert response.status_code == 200
@@ -31,6 +36,13 @@ def test_update_user(client, user_id):
     response = client.put(f"/users/{user_id}", json=update_payload)
     assert response.status_code == 200
     assert response.json()["email"] == "cant_see_me@example.com"
+
+
+# test update user but with invalid data
+def test_update_user_invalid_data(client, user_id):
+    update_payload = {"email": 123}
+    response = client.put(f"/users/{user_id}", json=update_payload)
+    assert response.status_code == 422
 
 
 def test_delete_user(client, user_id):

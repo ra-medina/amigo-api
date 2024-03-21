@@ -39,6 +39,17 @@ def test_update_billing(client, billing_id):
     assert response.json()["paid"] is True
 
 
+# test update billing but with invalid data
+def test_update_billing_invalid_data(client, billing_id):
+    updated_data = {
+        "amount": "150.0",
+        "date": "no-date",
+        "paid": "True",
+    }
+    response = client.put(f"/billings/{billing_id}", json=updated_data)
+    assert response.status_code == 422, f"Response body is: {response.json()}"
+
+
 def test_delete_billing(client, billing_id):
     response = client.delete(f"/billings/{billing_id}")
     assert response.status_code == 204, f"Deletion failed or error: {response.json()}"
