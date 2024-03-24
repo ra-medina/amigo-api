@@ -20,6 +20,32 @@ def create_appointment(
 ) -> models.Appointment:
     """
     Create a new appointment in the database.
+
+    This function creates a new appointment in the database based on the provided appointment data.
+    The appointment data is passed as a parameter in the form of a `schemas.AppointmentCreate` object.
+    The function returns the created appointment as a `models.Appointment` object.
+
+    Parameters:
+    - appointment: The appointment data to be created in the database.
+    - db: The database session to be used for the operation.
+
+    Returns:
+    - The created appointment as a `models.Appointment` object.
+
+    Raises:
+    - None.
+
+    Example Usage:
+    ```
+    appointment_data = {
+        "start_time": "03-01-2022 09:00:00",
+        "end_time": "03-01-2022 10:00:00",
+        "description": "Regular check-up",
+        "notes": "Patient is recovering well",
+        "user_id": 1,
+    }
+    created_appointment = create_appointment(appointment_data, db)
+    ```
     """
     new_appointment = models.Appointment(**appointment.model_dump())
     db.add(new_appointment)
@@ -34,6 +60,15 @@ def create_appointment(
 def get_appointments(db: Session = Depends(get_db)) -> List[models.Appointment]:
     """
     Retrieve all appointments from the database.
+
+    This function queries the database to retrieve all appointments stored in the database.
+    It returns a list of `Appointment` objects, which are defined in the `schemas` module.
+
+    Parameters:
+        db (Session): The database session to use for the query. Defaults to the result of `get_db()`.
+
+    Returns:
+        List[models.Appointment]: A list of `Appointment` objects representing all appointments in the database.
     """
     appointments = db.query(models.Appointment).all()
     return appointments
