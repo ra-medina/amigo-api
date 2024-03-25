@@ -10,11 +10,13 @@ class UserBase(BaseModel):
     full_name: str
     phone_number: Optional[str] = None
     role: Optional[str] = None
+    is_superuser: bool = False
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str
+    is_superuser: bool = False
 
 
 # Properties to receive via API on update
@@ -43,6 +45,7 @@ class User(UserInDBBase):
 # Properties properties stored in DB
 class UserInDB(UserInDBBase):
     hashed_password: str
+    is_superuser: bool = False
 
 
 # Appointment schemas

@@ -34,18 +34,6 @@ def create_appointment(
 
     Raises:
     - None.
-
-    Example Usage:
-    ```
-    appointment_data = {
-        "start_time": "03-01-2022 09:00:00",
-        "end_time": "03-01-2022 10:00:00",
-        "description": "Regular check-up",
-        "notes": "Patient is recovering well",
-        "user_id": 1,
-    }
-    created_appointment = create_appointment(appointment_data, db)
-    ```
     """
     new_appointment = models.Appointment(**appointment.model_dump())
     db.add(new_appointment)
@@ -83,7 +71,17 @@ def get_appointment(
     appointment_id: int, db: Session = Depends(get_db)
 ) -> models.Appointment:
     """
-    Retrieve a specific appointment by its ID.
+    Retrieve a single appointment from the database.
+
+    Args:
+        appointment_id (int): The ID of the appointment to retrieve.
+        db (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        models.Appointment: The retrieved appointment.
+
+    Raises:
+        HTTPException: If the appointment with the specified ID is not found.
     """
     appointment = (
         db.query(models.Appointment)
@@ -107,6 +105,20 @@ def update_appointment(
 ) -> models.Appointment:
     """
     Update an existing appointment.
+
+    This function is a PUT router that updates an appointment with the provided appointment_id.
+    It takes in the appointment_id, the updated_appointment data, and the database session as parameters.
+
+    Parameters:
+    - appointment_id (int): The ID of the appointment to be updated.
+    - updated_appointment (schemas.AppointmentUpdate): The updated appointment data.
+    - db (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+    - models.Appointment: The updated appointment.
+
+    Raises:
+    - HTTPException: If the appointment with the provided appointment_id is not found.
     """
     appointment = (
         db.query(models.Appointment)
