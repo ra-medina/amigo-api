@@ -13,7 +13,6 @@ load_dotenv()
 # access to the values within the .ini file in use.
 config = context.config
 
-load_dotenv()
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
