@@ -36,6 +36,9 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> mode
         email=user.email, full_name=user.full_name, hashed_password=hashed_password
     )
 
+    if user.is_admin:
+        new_user.is_admin = user.is_admin
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

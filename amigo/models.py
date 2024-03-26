@@ -26,6 +26,7 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     is_clinician = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
 
     appointments = relationship("Appointment", back_populates="user")
     billings = relationship("Billing", back_populates="user")
