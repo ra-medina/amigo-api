@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
@@ -9,22 +9,101 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: str
     phone_number: Optional[str] = None
-    role: Optional[str] = None
-    is_admin: bool = False
+    dob: date
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str
-    is_admin: bool = False
 
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):
-    email: Optional[EmailStr] = None
     full_name: Optional[str] = None
+    dob: Optional[date] = None
+
+
+class PatientBase(UserBase):
+    gender: str
+    phone_number: str
+    emergency_contact: str
+
+
+class PatientCreate(PatientBase):
+    password: str
+
+
+class PatientUpdate(BaseModel):
+    full_name: Optional[str] = None
+    dob: Optional[date] = None
+    gender: Optional[str] = None
     phone_number: Optional[str] = None
-    role: Optional[str] = None
+    emergency_contact: Optional[str] = None
+
+
+class Patient(PatientBase):
+    id: int
+    email: str
+    full_name: str
+    dob: date
+
+    class Config:
+        from_attributes = True
+
+
+class ClinicianBase(UserBase):
+    specialization: str
+    license_number: str
+
+
+class ClinicianCreate(ClinicianBase):
+    password: str
+
+
+class ClinicianUpdate(BaseModel):
+    full_name: Optional[str] = None
+    dob: Optional[date] = None
+    specialization: Optional[str] = None
+    license_number: Optional[str] = None
+
+
+class ClinicianSuperuserBase(ClinicianBase):
+    pass
+
+
+class ClinicianSuperuserCreate(ClinicianSuperuserBase):
+    password: str
+
+
+class ClinicianSuperuserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    dob: Optional[date] = None
+    specialization: Optional[str] = None
+    license_number: Optional[str] = None
+
+
+class Clinician(ClinicianBase):
+    id: int
+    email: str
+    full_name: str
+    dob: date
+    specialization: str
+    license_number: str
+
+    class Config:
+        from_attributes = True
+
+
+class ClinicianSuperuser(ClinicianBase):
+    id: int
+    email: str
+    full_name: str
+    dob: date
+    specialization: str
+    license_number: str
+
+    class Config:
+        from_attributes = True
 
 
 # Properties shared by models stored in DB
@@ -34,7 +113,7 @@ class UserInDBBase(UserBase):
     is_clinician: bool
 
     class ConfigDict:
-        orm_mode = True
+        from_attributes = True
 
 
 # Properties to return to client
@@ -70,7 +149,7 @@ class Appointment(AppointmentBase):
     user_id: int
 
     class ConfigDict:
-        orm_mode = True
+        from_attributes = True
 
 
 # Billing schemas
@@ -93,7 +172,7 @@ class Billing(BillingBase):
     user_id: int
 
     class ConfigDict:
-        orm_mode = True
+        from_attributes = True
 
 
 # MedicalRecord schemas
@@ -113,7 +192,7 @@ class MedicalRecord(MedicalRecordBase):
     user_id: int
 
     class ConfigDict:
-        orm_mode = True
+        from_attributes = True
 
 
 # Note schemas
@@ -131,4 +210,9 @@ class Note(NoteBase):
     author_id: int
 
     class ConfigDict:
-        orm_mode = True
+        from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

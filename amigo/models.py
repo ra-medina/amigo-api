@@ -1,12 +1,12 @@
 from sqlalchemy import (
     Boolean,
     Column,
+    Date,
     DateTime,
+    Float,
     ForeignKey,
     Integer,
-    Numeric,
     String,
-    Text,
 )
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -14,24 +14,75 @@ Base = declarative_base()
 
 
 class User(Base):
-    """
-    User model representing both patients and clinicians.
-    """
+    """Base User model representing both patients and clinicians."""
 
     __tablename__ = "users"
+    __mapper_args__ = {"polymorphic_identity": "user", "polymorphic_on": "user_type"}
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     full_name = Column(String)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
-    is_clinician = Column(Boolean, default=False)
-    is_admin = Column(Boolean, default=False)
+    dob = Column(Date)
+    user_type = Column(String)
 
-    appointments = relationship("Appointment", back_populates="user")
-    billings = relationship("Billing", back_populates="user")
-    medical_records = relationship("MedicalRecord", back_populates="user")
-    notes = relationship("Note", back_populates="author")
+
+class Patient(User):
+    """Patient subclass inheriting from User. Has patient-specific features."""
+
+    __tablename__ = "patient"
+    id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    __mapper_args__ = {"polymorphic_identity": "patient"}
+
+    gender = Column(String)
+    phone_number = Column(String)
+    emergency_contact = Column(String)
+
+    # Specify the foreign_keys to clear any ambiguity
+    appointments = relationship(
+        "Appointment",
+        foreign_keys="[Appointment.patient_id]",
+        backref="patient_appointments",
+    )
+    billings = relationship(
+        "Billing", foreign_keys="[Billing.patient_id]", backref="patient_billings"
+    )
+    medical_records = relationship(
+        "MedicalRecord",
+        foreign_keys="[MedicalRecord.patient_id]",
+        backref="patient_records",
+    )
+
+
+class Clinician(User):
+    """Clinician subclass inheriting from User. Has clinician-specific features."""
+
+    __tablename__ = "clinician"
+    id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    __mapper_args__ = {"polymorphic_identity": "clinician"}
+
+    specialization = Column(String)
+    license_number = Column(String)
+
+    # Specify the foreign_keys to clear any ambiguity
+    appointments = relationship(
+        "Appointment",
+        foreign_keys="[Appointment.clinician_id]",
+        backref="clinician_appointments",
+    )
+    billings = relationship(
+        "Billing", foreign_keys="[Billing.clinician_id]", backref="clinician_billings"
+    )
+    notes = relationship(
+        "Note", foreign_keys="[Note.author_id]", backref="author_notes"
+    )
+
+
+class ClinicianSuperuser(Clinician):
+    """ClinicianSuperuser subclass inheriting from Clinician. Has superuser-specific features."""
+
+    __mapper_args__ = {"polymorphic_identity": "clinician_superuser"}
 
 
 class Appointment(Base):
@@ -42,13 +93,15 @@ class Appointment(Base):
     __tablename__ = "appointments"
 
     id = Column(Integer, primary_key=True, index=True)
+    patient_id = Column(Integer, ForeignKey("users.id"))
+    clinician_id = Column(Integer, ForeignKey("users.id"))
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     description = Column(String)
     notes = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
 
-    user = relationship("User", back_populates="appointments")
+    patient = relationship("Patient", foreign_keys=[patient_id])
+    clinician = relationship("Clinician", foreign_keys=[clinician_id])
 
 
 class Billing(Base):
@@ -59,12 +112,19 @@ class Billing(Base):
     __tablename__ = "billings"
 
     id = Column(Integer, primary_key=True, index=True)
-    amount = Column(Numeric(10, 2))
-    date = Column(DateTime)
-    paid = Column(Boolean, default=False)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    patient_id = Column(Integer, ForeignKey("users.id"))
+    clinician_id = Column(Integer, ForeignKey("users.id"))
+    amount = Column(Float)
+    date = Column(Date)
+    description = Column(String)
+    is_paid = Column(Boolean, default=False)
 
-    user = relationship("User", back_populates="billings")
+    patient = relationship(
+        "User", foreign_keys=[patient_id], backref="patient_billings"
+    )
+    clinician = relationship(
+        "User", foreign_keys=[clinician_id], backref="clinician_billings"
+    )
 
 
 class MedicalRecord(Base):
@@ -75,10 +135,13 @@ class MedicalRecord(Base):
     __tablename__ = "medical_records"
 
     id = Column(Integer, primary_key=True, index=True)
-    record = Column(Text)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    patient_id = Column(Integer, ForeignKey("users.id"))
+    record_data = Column(String)
 
-    user = relationship("User", back_populates="medical_records")
+    # Relationship to the User model, with a backref for easy reverse access
+    patient = relationship(
+        "User", foreign_keys=[patient_id], backref="patient_medical_records"
+    )
 
 
 class Note(Base):
@@ -89,8 +152,10 @@ class Note(Base):
     __tablename__ = "notes"
 
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(Text)
-    created_at = Column(DateTime)
     author_id = Column(Integer, ForeignKey("users.id"))
+    patient_id = Column(Integer, ForeignKey("users.id"))
+    note_content = Column(String)
+    date = Column(Date)
 
-    author = relationship("User", back_populates="notes")
+    author = relationship("User", foreign_keys=[author_id], backref="notes_written")
+    patient = relationship("User", foreign_keys=[patient_id], backref="notes_received")
