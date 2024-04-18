@@ -8,7 +8,7 @@ from amigo.database import get_db
 
 router = APIRouter(
     prefix="/auth",
-    tags=["Authentication"],
+    tags=["authentication"],
 )
 
 auth_service = AuthService()
